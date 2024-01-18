@@ -1,17 +1,17 @@
 import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-
-data = pd.read_csv('data.csv')
-
-x = np.array(data['km'])
-y = np.array(data['price'])
 
 
-plt.title("Car price estimation depending on mileage")
-plt.xlabel('km')
-plt.ylabel('price')
-plt.grid(True)
+def plotLinearRegression(thetas, mileages, prices):
+    plt.title("Car price estimation depending on mileage")
+    plt.xlabel('km')
+    plt.ylabel('price')
+    plt.grid(True)
 
-plt.plot(x,y, "bs")
-plt.show()
+    lineX = [float(min(mileages)), float(max(mileages))]
+    lineY = []
+    for elem in lineX:
+    	result = thetas[1] * normalizeElem(mileages, elem) + thetas[0]
+    	lineY.append(denormalizeElem(prices, elem)) 
+
+    plt.plot(mileages,prices, "bs", lineX, lineY, 'r-')
+    plt.show()
