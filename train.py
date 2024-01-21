@@ -87,12 +87,22 @@ def runGradientDescent(x, y, thetas, learningRate):
 
 # STEP 4: PLOT RESULT
 
-def plotLinearRegression(mileages, prices, thetas, ax):
+def plotLinearRegression(frames, mileages, prices, t0, t1, ax):
+
+    ax.clear()
+
+    ax.set_title("Car price estimation depending on mileage", fontweight='bold')
+    ax.set_xlabel('km', fontweight='bold')
+    ax.set_ylabel('price', fontweight='bold')
+    ax.grid(True)
+
+    ax.plot(mileages, prices, "bs")
+
 
     lineX = [float(min(mileages)), float(max(mileages))]
     lineY = []
     for elem in lineX:
-        result = thetas[1] * normalizeElem(mileages, elem) + thetas[0]
+        result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
         lineY.append(denormalizeElem(prices, result)) 
 
     ax.plot(lineX, lineY, 'r-')
@@ -126,15 +136,12 @@ def main():
 
     t0, t1 = getThetas()
 
+    print(t0)
+
+
     # graph
     fig, ax = plt.subplots()
     plt.subplots_adjust(top=0.9, bottom=0.2) 
-    ax.set_title("Car price estimation depending on mileage", fontweight='bold')
-    ax.set_xlabel('km', fontweight='bold')
-    ax.set_ylabel('price', fontweight='bold')
-    ax.grid(True)
-
-    ax.plot(mileages, prices, "bs")
 
     # # BUTTONS
 
@@ -158,9 +165,9 @@ def main():
     # button_1000000.on_clicked(1000000)
 
     # animation
-    #ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, ax), frames=iterations, interval=2, repeat=False)
+    ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, ax), frames=1000, interval=2, repeat=False)
 
-    plotLinearRegression(mileages, prices, thetas, ax)
+    #plotLinearRegression(mileages, prices, thetas, ax)
 
     plt.show()
 
