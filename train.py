@@ -1,11 +1,14 @@
+import csv
 import pandas as pd
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 from predict import predictPrice
+import matplotlib.animation as animation
 
-iterations = 100
+learningRate = 0.0001
+iterations = 1000000
 
 # STEP 1: GET DATA FROM CSV
 
@@ -16,6 +19,14 @@ def getData():
     prices = np.array(data['price'])
 
     return(mileages, prices)
+
+def getThetas():
+    data = pd.read_csv('thetas.csv')
+
+    t0 = np.array(data['t0'])
+    t1 = np.array(data['t1'])
+
+    return(t0, t1)
 
 # STEP 2: PROCESS FEATURE SCALING
 
@@ -42,7 +53,14 @@ def	normalizeElem(list, elem):
 def	denormalizeElem(list, elem):
     return ((elem * (max(list) - min(list))) + min(list))
 
+#def denormalizeTheta()
+
 # STEP 3: TRAIN WITH GRADIENT DESCENT
+
+def	storeThetas(t0, t1, file):
+	with open(file, 'a') as csvfile:
+		csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		csvWriter.writerow([t0, t1])
 
 def runGradientDescent(x, y, thetas, learningRate):
     m = len(y)
@@ -63,19 +81,13 @@ def runGradientDescent(x, y, thetas, learningRate):
         # Update theta with derivate of error function multiplied by learning rate
         newThetas[i] = thetas[i] - learningRate * cost
     
+    storeThetas(newThetas[0], newThetas[1], 'thetas.csv')
+
     return newThetas
 
 # STEP 4: PLOT RESULT
 
-def plotLinearRegression(thetas, mileages, prices):
-    fig, ax = plt.subplots()
-
-    plt.subplots_adjust(top=0.9, bottom=0.2) 
-
-    ax.set_title("Car price estimation depending on mileage", fontweight='bold')
-    ax.set_xlabel('km', fontweight='bold')
-    ax.set_ylabel('price', fontweight='bold')
-    ax.grid(True)
+def plotLinearRegression(mileages, prices, thetas, ax):
 
     lineX = [float(min(mileages)), float(max(mileages))]
     lineY = []
@@ -83,32 +95,9 @@ def plotLinearRegression(thetas, mileages, prices):
         result = thetas[1] * normalizeElem(mileages, elem) + thetas[0]
         lineY.append(denormalizeElem(prices, result)) 
 
-    ax.plot(mileages, prices, "bs")
     ax.plot(lineX, lineY, 'r-')
     # add predicted prices as crossed
 
-    # BUTTONS
-
-    ax_button_1 = plt.axes([0.14, 0.02, 0.15, 0.04], facecolor='black')
-    ax_button_10 = plt.axes([0.34, 0.02, 0.15, 0.04], facecolor='black')
-    ax_button_1000 = plt.axes([0.54, 0.02, 0.15, 0.04], facecolor='black')
-    ax_button_1000000 = plt.axes([0.74, 0.02, 0.15, 0.04], facecolor='black')
-
-    button_1 = Button(ax_button_1, '1', color='white', hovercolor='cornflowerblue')
-    button_10 = Button(ax_button_10, '10', color='white', hovercolor='cornflowerblue')
-    button_1000 = Button(ax_button_1000, '1000', color='white', hovercolor='cornflowerblue')
-    button_1000000 = Button(ax_button_1000000, '1 000 000', color='white', hovercolor='cornflowerblue')
-
-    def on_button_click(it):
-        iterations = it
-        #rerun gradient descent
-
-    button_1.on_clicked(1)
-    button_10.on_clicked(10)
-    button_1000.on_clicked(1000)
-    button_1000000.on_clicked(1000000)
-
-    plt.show()
 
 # def plotCostFunction():
 
@@ -121,15 +110,62 @@ def plotLinearRegression(thetas, mileages, prices):
 # MAIN
 
 def main():
-    learningRate = 0.0001
     thetas = [0, 0]
 
     mileages, prices = getData()
-
     x, y = normalizeData(mileages, prices)
 
-    for i in range(iterations):
+    # prepare thetas.csv
+    with open('thetas.csv', 'w') as csvfile:
+        csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        csvWriter.writerow(['t0', 't1'])
+
+    # train
+    for i in range (iterations):
         thetas = runGradientDescent(x, y, thetas, learningRate)
+
+    t0, t1 = getThetas()
+
+    # graph
+    fig, ax = plt.subplots()
+    plt.subplots_adjust(top=0.9, bottom=0.2) 
+    ax.set_title("Car price estimation depending on mileage", fontweight='bold')
+    ax.set_xlabel('km', fontweight='bold')
+    ax.set_ylabel('price', fontweight='bold')
+    ax.grid(True)
+
+    ax.plot(mileages, prices, "bs")
+
+    # # BUTTONS
+
+    # ax_button_1 = plt.axes([0.14, 0.02, 0.15, 0.04], facecolor='black')
+    # ax_button_10 = plt.axes([0.34, 0.02, 0.15, 0.04], facecolor='black')
+    # ax_button_1000 = plt.axes([0.54, 0.02, 0.15, 0.04], facecolor='black')
+    # ax_button_1000000 = plt.axes([0.74, 0.02, 0.15, 0.04], facecolor='black')
+
+    # button_1 = Button(ax_button_1, '1', color='white', hovercolor='cornflowerblue')
+    # button_10 = Button(ax_button_10, '10', color='white', hovercolor='cornflowerblue')
+    # button_1000 = Button(ax_button_1000, '1000', color='white', hovercolor='cornflowerblue')
+    # button_1000000 = Button(ax_button_1000000, '1 000 000', color='white', hovercolor='cornflowerblue')
+
+    # def on_button_click(it):
+    #     iterations = it
+    #     #rerun gradient descent
+
+    # button_1.on_clicked(1)
+    # button_10.on_clicked(10)
+    # button_1000.on_clicked(1000)
+    # button_1000000.on_clicked(1000000)
+
+    # animation
+    #ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, ax), frames=iterations, interval=2, repeat=False)
+
+    plotLinearRegression(mileages, prices, thetas, ax)
+
+    plt.show()
+
+    # plotLinearRegression(thetas, mileages, prices)
+
 
     # print(thetas[0])
     # print(thetas[1])
@@ -138,7 +174,6 @@ def main():
     #     result = thetas[1] * normalizeElem(mileages, elem) + thetas[0]
     #     print(elem, ": ", round(denormalizeElem(prices, result)))
 
-    plotLinearRegression(thetas, mileages, prices)
 
     # STORE ALL THETAS IN CSV
 
