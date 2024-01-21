@@ -2,6 +2,10 @@ import sys
 
 def predictPrice(mileage, thetas):
     return thetas[0] + thetas[1] * mileage
+    # get last computed theta from thetas.csv
+
+#def normPredictPrice(mileage, thetas):
+#    return thetas[0] + thetas[1] * mileage
 
 def getMileage():
     while 1:

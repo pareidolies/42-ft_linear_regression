@@ -98,7 +98,6 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, ax):
 
     ax.plot(mileages, prices, "bs")
 
-
     lineX = [float(min(mileages)), float(max(mileages))]
     lineY = []
     for elem in lineX:
@@ -108,14 +107,11 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, ax):
     ax.plot(lineX, lineY, 'r-')
     # add predicted prices as crossed
 
-
 # def plotCostFunction():
-
 
 # STEP 5: ANALYZE ACCURACY OF MODEL
 
-
-
+# r2 / mse / mae
 
 # MAIN
 
@@ -135,9 +131,6 @@ def main():
         thetas = runGradientDescent(x, y, thetas, learningRate)
 
     t0, t1 = getThetas()
-
-    print(t0)
-
 
     # graph
     fig, ax = plt.subplots()
@@ -164,25 +157,13 @@ def main():
     # button_1000.on_clicked(1000)
     # button_1000000.on_clicked(1000000)
 
+    # play button
+
     # animation
     ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, ax), frames=1000, interval=2, repeat=False)
-
-    #plotLinearRegression(mileages, prices, thetas, ax)
-
     plt.show()
 
     # plotLinearRegression(thetas, mileages, prices)
-
-
-    # print(thetas[0])
-    # print(thetas[1])
-
-    # for elem in mileages:
-    #     result = thetas[1] * normalizeElem(mileages, elem) + thetas[0]
-    #     print(elem, ": ", round(denormalizeElem(prices, result)))
-
-
-    # STORE ALL THETAS IN CSV
 
 if	__name__ == '__main__':
     main()
