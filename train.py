@@ -53,14 +53,14 @@ def	normalizeElem(list, elem):
 def	denormalizeElem(list, elem):
     return ((elem * (max(list) - min(list))) + min(list))
 
-#def denormalizeTheta()
+# how to denormalize theta ?
 
 # STEP 3: TRAIN WITH GRADIENT DESCENT
 
-def	storeThetas(t0, t1, file):
+def	storeThetas(t0, t1, cost, file):
 	with open(file, 'a') as csvfile:
 		csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-		csvWriter.writerow([t0, t1])
+		csvWriter.writerow([t0, t1, cost])
 
 def runGradientDescent(x, y, thetas, learningRate):
     m = len(y)
@@ -70,18 +70,24 @@ def runGradientDescent(x, y, thetas, learningRate):
     for i in range(len(thetas)):
 
         # Compute partial derivative of cost function according to ith theta
-        cost = 0
+        costPrime = 0
         for nbr in range(m):
             if (i == 0):
-                cost += (predictPrice(x[nbr], thetas) - y[nbr])
+                costPrime += (predictPrice(x[nbr], thetas) - y[nbr])
             else:
-                cost += (predictPrice(x[nbr], thetas) - y[nbr]) * x[nbr]
-        cost /= m
+                costPrime += (predictPrice(x[nbr], thetas) - y[nbr]) * x[nbr]
+        costPrime /= m
 
         # Update theta with derivate of error function multiplied by learning rate
-        newThetas[i] = thetas[i] - learningRate * cost
+        newThetas[i] = thetas[i] - learningRate * costPrime
     
-    storeThetas(newThetas[0], newThetas[1], 'thetas.csv')
+    # BONUS : compute cost
+    cost = 0
+    for nbr in range(m):
+        cost += (predictPrice(x[nbr], newThetas) - y[nbr]) ** 2
+    cost /= (2 * m)
+
+    storeThetas(newThetas[0], newThetas[1], cost, 'thetas.csv')
 
     return newThetas
 
@@ -105,13 +111,15 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, ax):
         lineY.append(denormalizeElem(prices, result)) 
 
     ax.plot(lineX, lineY, 'r-')
-    # add predicted prices as crossed
+    # add predicted prices as crosses
+
+# STEP 5 : PLOT COST FUNCTION
+
+# def computeCost(t0, t1):
+
 
 # def plotCostFunction():
 
-# STEP 5: ANALYZE ACCURACY OF MODEL
-
-# r2 / mse / mae
 
 # MAIN
 
@@ -124,7 +132,7 @@ def main():
     # prepare thetas.csv
     with open('thetas.csv', 'w') as csvfile:
         csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        csvWriter.writerow(['t0', 't1'])
+        csvWriter.writerow(['t0', 't1', 'cost'])
 
     # train
     for i in range (iterations):
