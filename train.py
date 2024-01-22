@@ -25,8 +25,9 @@ def getThetas():
 
     t0 = np.array(data['t0'])
     t1 = np.array(data['t1'])
+    cost = np.array(data['cost'])
 
-    return(t0, t1)
+    return(t0, t1, cost)
 
 # STEP 2: PROCESS FEATURE SCALING
 
@@ -93,7 +94,7 @@ def runGradientDescent(x, y, thetas, learningRate):
 
 # STEP 4: PLOT RESULT
 
-def plotLinearRegression(frames, mileages, prices, t0, t1, ax):
+def plotLinearRegression(frames, mileages, prices, t0, t1, cost, ax, ax2):
 
     ax.clear()
 
@@ -113,13 +114,13 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, ax):
     ax.plot(lineX, lineY, 'r-')
     # add predicted prices as crosses
 
-# STEP 5 : PLOT COST FUNCTION
+    # BONUS : plot cost function (don't clear, add last point in red)
+    ax2.set_title("Cost function", fontweight='bold')
+    ax2.set_xlabel('t0', fontweight='bold')
+    ax2.set_ylabel('t1', fontweight='bold')
+    ax2.set_zlabel('cost', fontweight='bold')
 
-# def computeCost(t0, t1):
-
-
-# def plotCostFunction():
-
+    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "k-.")
 
 # MAIN
 
@@ -138,11 +139,13 @@ def main():
     for i in range (iterations):
         thetas = runGradientDescent(x, y, thetas, learningRate)
 
-    t0, t1 = getThetas()
+    t0, t1, cost = getThetas()
 
-    # graph
-    fig, ax = plt.subplots()
-    plt.subplots_adjust(top=0.9, bottom=0.2) 
+    # graphs
+    fig = plt.figure(1)
+    ax = plt.subplot(2, 1, 1)
+    ax2 = plt.subplot(2, 2, 3, projection="3d")
+    plt.subplots_adjust(top=0.9, bottom=0.1) 
 
     # # BUTTONS
 
@@ -168,10 +171,8 @@ def main():
     # play button
 
     # animation
-    ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, ax), frames=1000, interval=2, repeat=False)
+    ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames=1000, interval=2, repeat=False)
     plt.show()
-
-    # plotLinearRegression(thetas, mileages, prices)
 
 if	__name__ == '__main__':
     main()
