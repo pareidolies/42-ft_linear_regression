@@ -14,6 +14,7 @@ iterations = 1000000
 # STEP 1: GET DATA FROM CSV
 
 def getData():
+    # check if file exists
     data = pd.read_csv('data.csv')
 
     mileages = np.array(data['km'])
@@ -111,7 +112,7 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, cost, ax, ax2):
     ax.plot(lineX, lineY, 'r-')
     # add predicted prices as crosses
 
-    # BONUS : plot cost function (don't clear, add last point in red)
+    # BONUS : plot cost function (don't clear, add last point in red, draw overall shape)
     ax2.set_title("Cost function", fontweight='bold')
     ax2.set_xlabel('t0', fontweight='bold')
     ax2.set_ylabel('t1', fontweight='bold')
@@ -147,32 +148,22 @@ def main():
     ax2 = plt.subplot(2, 2, 3, projection="3d")
     plt.subplots_adjust(top=0.9, bottom=0.1) 
 
-    # # BUTTONS
+    # PLAY BUTTONS
 
     # ax_button_1 = plt.axes([0.14, 0.02, 0.15, 0.04], facecolor='black')
-    # ax_button_10 = plt.axes([0.34, 0.02, 0.15, 0.04], facecolor='black')
-    # ax_button_1000 = plt.axes([0.54, 0.02, 0.15, 0.04], facecolor='black')
-    # ax_button_1000000 = plt.axes([0.74, 0.02, 0.15, 0.04], facecolor='black')
 
     # button_1 = Button(ax_button_1, '1', color='white', hovercolor='cornflowerblue')
-    # button_10 = Button(ax_button_10, '10', color='white', hovercolor='cornflowerblue')
-    # button_1000 = Button(ax_button_1000, '1000', color='white', hovercolor='cornflowerblue')
-    # button_1000000 = Button(ax_button_1000000, '1 000 000', color='white', hovercolor='cornflowerblue')
 
     # def on_button_click(it):
     #     iterations = it
-    #     #rerun gradient descent
 
     # button_1.on_clicked(1)
-    # button_10.on_clicked(10)
-    # button_1000.on_clicked(1000)
-    # button_1000000.on_clicked(1000000)
-
-    # play button
 
     # animation
     ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames= int(iterations / 1000), interval=2, blit = True, repeat=False)
     plt.show()
+
+    # clean end
 
 if	__name__ == '__main__':
     main()
