@@ -4,7 +4,8 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
-from predict import predictPrice
+from predict import predictPrice, predictPriceNorm
+from utils import normalizeElem, denormalizeElem
 import matplotlib.animation as animation
 
 learningRate = 0.0001
@@ -47,12 +48,6 @@ def	normalizeData(mileages, prices):
         y.append((price - minP) / (maxP - minP))
 
     return (x, y)
-
-def	normalizeElem(list, elem):
-    return ((elem - min(list)) / (max(list) - min(list)))
-
-def	denormalizeElem(list, elem):
-    return ((elem * (max(list) - min(list))) + min(list))
 
 # how to denormalize theta ?
 
@@ -101,6 +96,8 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, cost, ax, ax2):
     ax.set_title("Car price estimation depending on mileage", fontweight='bold')
     ax.set_xlabel('km', fontweight='bold')
     ax.set_ylabel('price', fontweight='bold')
+    ax.set_xlim(min(mileages) - 10000, max(mileages) + 10000)
+    ax.set_ylim(min(prices) - 1000, max(prices) + 1000)
     ax.grid(True)
 
     ax.plot(mileages, prices, "bs")
@@ -119,8 +116,11 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, cost, ax, ax2):
     ax2.set_xlabel('t0', fontweight='bold')
     ax2.set_ylabel('t1', fontweight='bold')
     ax2.set_zlabel('cost', fontweight='bold')
+    ax2.set_xlim(-1.0, 1.0)
+    ax2.set_ylim(-1.0, 1.0)
+    ax2.set_zlim(min(cost), max(cost))
 
-    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "k-.")
+    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "b.")
 
 # MAIN
 
@@ -171,7 +171,7 @@ def main():
     # play button
 
     # animation
-    ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames=1000, interval=2, repeat=False)
+    ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames= int(iterations / 1000), interval=2, blit = True, repeat=False)
     plt.show()
 
 if	__name__ == '__main__':

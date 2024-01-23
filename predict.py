@@ -1,4 +1,5 @@
 import sys
+from utils import normalizeElem, denormalizeElem
 
 def predictPrice(mileage, thetas):
     return thetas[0] + thetas[1] * mileage
