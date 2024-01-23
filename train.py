@@ -9,7 +9,7 @@ from utils import normalizeElem, denormalizeElem
 import matplotlib.animation as animation
 
 learningRate = 0.0001
-iterations = 1000000
+iterations = 500000
 
 # STEP 1: GET DATA FROM CSV
 
@@ -88,6 +88,16 @@ def runGradientDescent(x, y, thetas, learningRate):
 
     return newThetas
 
+def costFunction(t0, t1, x, y):
+    m = len(y)
+    cost = 0
+    thetas = [t0, t1]
+
+    for nbr in range(m):
+        cost += (predictPrice(x[nbr], thetas) - y[nbr]) ** 2
+    cost /= (2 * m)
+    return (cost)
+
 # STEP 4: PLOT RESULT
 
 def plotLinearRegression(frames, mileages, prices, t0, t1, cost, ax, ax2):
@@ -119,7 +129,7 @@ def plotLinearRegression(frames, mileages, prices, t0, t1, cost, ax, ax2):
     ax2.set_zlabel('cost', fontweight='bold')
     ax2.set_xlim(-1.0, 1.0)
     ax2.set_ylim(-1.0, 1.0)
-    ax2.set_zlim(min(cost), max(cost))
+    ax2.set_zlim(min(cost), 1.0)
 
     ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "b.")
 
@@ -159,8 +169,20 @@ def main():
 
     # button_1.on_clicked(1)
 
+
+    # 3d cost function
+
+    t0_vals = np.linspace(-1.0, 1.0, 100)
+    t1_vals = np.linspace(-1.0, 1.0, 100)
+    mesh_t0, mesh_t1 = np.meshgrid(t0_vals, t1_vals)
+
+    cost_vals = costFunction(mesh_t0, mesh_t1, x, y)
+
+    ax2.plot_surface(mesh_t0, mesh_t1, cost_vals, cmap='viridis')
+
     # animation
     ani = animation.FuncAnimation(fig=fig, func=plotLinearRegression, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames= int(iterations / 1000), interval=2, blit = True, repeat=False)
+    
     plt.show()
 
     # clean end

@@ -43,6 +43,7 @@ def main():
     print("mae: ", my_mae)
     my_r2score = r2score(y, y_hat)
     print("r2score: ", my_r2score)
+    # add interpretation
 
 if __name__ == "__main__":
     main()
