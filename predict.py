@@ -1,5 +1,7 @@
 import sys
 from utils import normalizeElem, denormalizeElem
+from precision import getLastThetas
+from train import getData
 
 def predictPrice(mileage, thetas):
     return thetas[0] + thetas[1] * mileage
@@ -26,8 +28,14 @@ def getMileage():
     return (mileage)
 
 def main():
+    mileages, prices = getData()
+    # set thetas to 0 before training
+    thetas = getLastThetas('thetas.csv')
+    
     mileage = getMileage()
-    print(mileage)
+    estimation = predictPriceNorm(mileage, thetas, mileages, prices)
+    print('The estimated price of a car with ' + mileage + ' km is ' + estimation)
+    # if proposed mileage in set of data add comparison ?
 
 if __name__ == "__main__":
     main()

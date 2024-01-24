@@ -2,6 +2,7 @@ import math
 import numpy as np
 from train import getData
 from predict import predictPriceNorm
+from colorama import Fore, Back, Style
 
 def getLastThetas(file):
     with open(file, 'r') as f:
@@ -35,14 +36,15 @@ def main():
     for i in range (len(x)):
         y_hat.append(predictPriceNorm(x[i], thetas, x, y))
 
+    print("Model accuracy indicators: ")
     my_mse = mse(y, y_hat)
-    print("mse: ", my_mse)
+    print("mse: " + Fore.MAGENTA + my_mse + Style.RESET_ALL)
     my_rmse = rmse(y, y_hat)
-    print("rmse: ", my_rmse)
+    print("rmse: " + Fore.MAGENTA + my_rmse + Style.RESET_ALL)
     my_mae = mae(y, y_hat)
-    print("mae: ", my_mae)
+    print("mae: " + Fore.MAGENTA + my_mae + Style.RESET_ALL)
     my_r2score = r2score(y, y_hat)
-    print("r2score: ", my_r2score)
+    print("r2score: " + Fore.MAGENTA + my_r2score + Style.RESET_ALL)
     # add interpretation
 
 if __name__ == "__main__":

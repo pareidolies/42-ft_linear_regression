@@ -101,7 +101,7 @@ def runGradientDescent(x, y, thetas, learningRate):
                 cost_prime += (predictPrice(x[nbr], thetas) - y[nbr]) * x[nbr]
         cost_prime /= m
 
-        # update theta with derivate of error function multiplied by learning rate
+        # update theta by removing derivate of error function multiplied by learning rate (tmpθ)
         newThetas[i] = thetas[i] - learningRate * cost_prime
     
     cost = costFunction(newThetas[0], newThetas[1], x, y)
@@ -136,7 +136,7 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2):
     ax.plot(lineX, lineY, 'r-') # add predicted prices as crosses + gap inbetween
 
     # cost function
-    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "b.")
+    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "yx")
 
 def plotLinearRegressionGrid(mileages, prices, ax):
 
@@ -163,7 +163,7 @@ def plotCostFunction3d(x, y, cost, ax2):
 
     cost_vals = costFunction(mesh_t0, mesh_t1, x, y)
 
-    ax2.plot_surface(mesh_t0, mesh_t1, cost_vals, cmap='viridis') # improve dégradé
+    ax2.plot_surface(mesh_t0, mesh_t1, cost_vals, cmap='viridis') # improve dégradé + set limits
 
 ### MAIN
 
