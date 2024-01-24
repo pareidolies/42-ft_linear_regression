@@ -1,5 +1,6 @@
 import csv
 import sys
+import os
 import math
 import time
 
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 import matplotlib.animation as animation
 
+from colorama import Fore, Back, Style
 from alive_progress import alive_bar
 
 from predict import predictPrice, predictPriceNorm
@@ -42,6 +44,9 @@ def getThetas():
     return(t0, t1, cost)
 
 def createCsv():
+    file = 'thetas.csv'
+    if(os.path.exists(file) and os.path.isfile(file)): 
+        os.remove(file)
     with open('thetas.csv', 'w') as csvfile:
         csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csvWriter.writerow(['t0', 't1', 'cost'])
@@ -108,7 +113,7 @@ def runGradientDescent(x, y, thetas, learningRate):
 ### STEP 4: PLOT RESULT
 
 def createFigure():
-    fig = plt.figure(1)
+    fig = plt.figure(1, figsize=(12.8, 9.6))
     ax = plt.subplot(2, 1, 1)
     ax2 = plt.subplot(2, 2, 3, projection="3d")
     plt.subplots_adjust(top=0.9, bottom=0.1)
@@ -128,7 +133,7 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2):
         result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
         lineY.append(denormalizeElem(prices, result)) 
 
-    ax.plot(lineX, lineY, 'r-') # add predicted prices as crosses
+    ax.plot(lineX, lineY, 'r-') # add predicted prices as crosses + gap inbetween
 
     # cost function
     ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "b.")
@@ -177,6 +182,19 @@ def main():
             thetas = runGradientDescent(x, y, thetas, learningRate)
             bar()
     t0, t1, cost = getThetas()
+
+    # prompt
+    print('Linear Regression ' + Fore.GREEN + '[READY]' + Style.RESET_ALL)
+    time.sleep(0.1)
+    print('Cost Function ' + Fore.GREEN + '[READY]' + Style.RESET_ALL)
+    time.sleep(0.1)
+    print('Graphs ' + Fore.GREEN + '[READY]' + Style.RESET_ALL)
+    time.sleep(0.1)
+    print('Press Enter to continue' )
+    while 1:
+        key = input()
+        if (key == ''):
+            break
 
     # graphs
     fig, ax, ax2 = createFigure()
