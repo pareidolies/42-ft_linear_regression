@@ -1,13 +1,19 @@
 import csv
 import sys
+import math
+import time
+
 import pandas as pd
 import numpy as np
-import math
+
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
+import matplotlib.animation as animation
+
+from alive_progress import alive_bar
+
 from predict import predictPrice, predictPriceNorm
 from utils import normalizeElem, denormalizeElem
-import matplotlib.animation as animation
 
 learningRate = 0.0001
 iterations = 500000
@@ -166,17 +172,16 @@ def main():
     createCsv()
 
     # train
-    for i in range (iterations):
-        thetas = runGradientDescent(x, y, thetas, learningRate)
+    with alive_bar(iterations) as bar:
+        for i in range (iterations):
+            thetas = runGradientDescent(x, y, thetas, learningRate)
+            bar()
     t0, t1, cost = getThetas()
 
     # graphs
-
     fig, ax, ax2 = createFigure()
     plotLinearRegressionGrid(mileages, prices, ax)
     plotCostFunction3d(x, y, cost, ax2)
-
-    # progression bar
 
     # animation
     ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames= int(iterations / 1000), interval=1, blit = True, repeat=False)
