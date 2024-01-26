@@ -1,7 +1,5 @@
 import sys
-from utils import normalizeElem, denormalizeElem
-from precision import getLastThetas
-from train import getData
+from utils import normalizeElem, denormalizeElem, getLastThetas, getData
 
 def predictPrice(mileage, thetas):
     return thetas[0] + thetas[1] * mileage

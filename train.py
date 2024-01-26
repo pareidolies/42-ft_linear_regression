@@ -16,42 +16,12 @@ from alive_progress import alive_bar
 
 from predict import predictPrice, predictPriceNorm
 from utils import normalizeElem, denormalizeElem
+from utils import getData, getThetas, createCsv
 
 learningRate = 0.0001
 iterations = 500000
 
-### STEP 1: GET DATA FROM CSV
-
-def getData():
-    try:
-        data = pd.read_csv('data.csv')
-
-        mileages = np.array(data['km'])
-        prices = np.array(data['price'])
-
-    except:
-        sys.exit('Csv file not found')
-
-    return(mileages, prices)
-
-def getThetas():
-    data = pd.read_csv('thetas.csv')
-
-    t0 = np.array(data['t0'])
-    t1 = np.array(data['t1'])
-    cost = np.array(data['cost'])
-
-    return(t0, t1, cost)
-
-def createCsv():
-    file = 'thetas.csv'
-    if(os.path.exists(file) and os.path.isfile(file)): 
-        os.remove(file)
-    with open('thetas.csv', 'w') as csvfile:
-        csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        csvWriter.writerow(['t0', 't1', 'cost'])
-
-### STEP 2: PROCESS FEATURE SCALING
+### STEP 1: PROCESS FEATURE SCALING
 
 def	normalizeData(mileages, prices):
     x = []
@@ -68,7 +38,7 @@ def	normalizeData(mileages, prices):
 
     return (x, y)
 
-### STEP 3: TRAIN WITH GRADIENT DESCENT
+### STEP 2: TRAIN WITH GRADIENT DESCENT
 
 def	storeThetas(t0, t1, cost, file):
 	with open(file, 'a') as csvfile:
@@ -110,21 +80,23 @@ def runGradientDescent(x, y, thetas, learningRate):
 
     return newThetas
 
-### STEP 4: PLOT RESULT
+### STEP 3: PLOT RESULT
 
 def createFigure():
     fig = plt.figure(1, figsize=(12.8, 9.6))
     ax = plt.subplot(2, 1, 1)
     ax2 = plt.subplot(2, 2, 3, projection="3d")
+    ax3 = plt.subplot(2, 2, 4)
     plt.subplots_adjust(top=0.9, bottom=0.1)
-    return (fig, ax, ax2)
+    return (fig, ax, ax2, ax3)
 
-def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2):
+def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2, ax3):
 
     ax.clear()
+    plotLinearRegressionGrid(mileages, prices, ax)
 
     # csv values
-    ax.plot(mileages, prices, "bs") 
+    ax.plot(mileages, prices, "ks") 
 
     # prediction line
     lineX = [float(min(mileages)), float(max(mileages))]
@@ -133,10 +105,29 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2):
         result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
         lineY.append(denormalizeElem(prices, result)) 
 
-    ax.plot(lineX, lineY, 'r-') # add predicted prices as crosses + gap inbetween
+    ax.plot(lineX, lineY, 'b-') # add predicted prices as crosses + gap inbetween
 
-    # cost function
-    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "yx")
+    # cost
+    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "k.")
+
+    # linear regression parameters
+    ax3.clear()
+    ax3.axis('off')
+
+    ax3.text(0, 0.4, 'epochs: ', fontsize = 12, fontweight='bold')
+    ax3.text(0.5, 0.4, str(frames * 1000), fontsize = 12)
+
+    ax3.text(0, 0.3, 'learning rate: ', fontsize = 12, fontweight='bold')
+    ax3.text(0.5, 0.3, str(learningRate), fontsize = 12)
+
+    ax3.text(0, 0.2, 'normalized: ', fontsize = 12, fontweight='bold')
+    ax3.text(0.5, 0.2, 'yes', fontsize = 12)
+
+    ax3.text(0, 0.1, 'theta0: ', fontsize = 12, fontweight='bold')
+    ax3.text(0.5, 0.1, str(t0[frames * 1000]), fontsize = 12)
+
+    ax3.text(0, 0, 'theta1: ' , fontsize = 12, fontweight='bold')
+    ax3.text(0.5, 0, str(t1[frames * 1000]), fontsize = 12)
 
 def plotLinearRegressionGrid(mileages, prices, ax):
 
@@ -157,13 +148,13 @@ def plotCostFunction3d(x, y, cost, ax2):
     ax2.set_ylim(-1.0, 1.0)
     ax2.set_zlim(min(cost), 1.0)
 
-    t0_vals = np.linspace(-1.0, 1.0, 100)
+    t0_vals = np.linspace(-0.75, 1.0, 100)
     t1_vals = np.linspace(-1.0, 1.0, 100)
     mesh_t0, mesh_t1 = np.meshgrid(t0_vals, t1_vals)
 
     cost_vals = costFunction(mesh_t0, mesh_t1, x, y)
 
-    ax2.plot_surface(mesh_t0, mesh_t1, cost_vals, cmap='viridis') # improve dégradé + set limits
+    ax2.plot_surface(mesh_t0, mesh_t1, cost_vals, cmap='viridis')
 
 ### MAIN
 
@@ -181,6 +172,7 @@ def main():
         for i in range (iterations):
             thetas = runGradientDescent(x, y, thetas, learningRate)
             bar()
+    thetas = runGradientDescent(x, y, thetas, learningRate)
     t0, t1, cost = getThetas()
 
     # prompt
@@ -196,16 +188,18 @@ def main():
         if (key == ''):
             break
 
+    print('Animation ' + Fore.GREEN + '[PLAY]' + Style.RESET_ALL)
+
     # graphs
-    fig, ax, ax2 = createFigure()
+    fig, ax, ax2, ax3 = createFigure()
+    fig.patch.set_facecolor('#FFFFF0')
     plotLinearRegressionGrid(mileages, prices, ax)
-    plotCostFunction3d(x, y, cost, ax2)
 
     # animation
-    ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2), frames= int(iterations / 1000), interval=1, blit = True, repeat=False)
-    plt.show()
+    ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2, ax3), frames= int(iterations / 1000 + 1), interval=1, blit = True, repeat=False)
+    plotCostFunction3d(x, y, cost, ax2)
 
-    # clean end
+    plt.show()
 
 if	__name__ == '__main__':
     main()

@@ -3,17 +3,8 @@ import numpy as np
 from train import getData
 from predict import predictPriceNorm
 from colorama import Fore, Back, Style
+from utils import getLastThetas
 
-def getLastThetas(file):
-    with open(file, 'r') as f:
-        thetas = [0.0, 0.0]
-        lines = f.readlines()
-        if lines:
-            lastLine = lines[-1].strip()
-            thetas[0] = float(lastLine.split(',')[0])
-            thetas[1] = float(lastLine.split(',')[1])
-        return thetas
-        
 def mse(y, y_hat):
 	return sum((y_hat - y) ** 2) / y.size
 
