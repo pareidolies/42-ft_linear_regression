@@ -105,7 +105,16 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2, ax3):
         result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
         lineY.append(denormalizeElem(prices, result)) 
 
-    ax.plot(lineX, lineY, 'b-') # add predicted prices as crosses + gap inbetween
+    ax.plot(lineX, lineY, 'b-')
+    
+    # # gap between predicted value and actual value
+    # predicted_values = []
+    # for elem in mileages:
+    #     result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
+    #     predicted_values.append(result)
+    # for i in range(len(mileages)):
+    #     ax.plot(mileages, predicted_values, 'ks')
+    #     ax.plot([mileages[i], mileages[i]], [predicted_values[i], prices[i]], 'r--')
 
     # cost
     ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "k.")
