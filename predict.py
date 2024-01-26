@@ -1,4 +1,5 @@
 import sys
+import os
 from utils import normalizeElem, denormalizeElem, getLastThetas, getData
 
 def predictPrice(mileage, thetas):
@@ -27,12 +28,18 @@ def getMileage():
 
 def main():
     mileages, prices = getData()
-    # set thetas to 0 before training
-    thetas = getLastThetas('thetas.csv')
-    
+
+    # if before training, set thetas to 0
+    file = 'thetas.csv'
+    if(os.path.exists(file) and os.path.isfile(file)): 
+        thetas = getLastThetas('thetas.csv')
+    else:
+        thetas = [0,0]
+
     mileage = getMileage()
+
     estimation = predictPriceNorm(mileage, thetas, mileages, prices)
-    print('The estimated price of a car with ' + mileage + ' km is ' + estimation)
+    print('The estimated price of a car with ' + str(mileage) + ' km is ' + str(estimation))
     # if proposed mileage in set of data add comparison ?
 
 if __name__ == "__main__":

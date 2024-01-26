@@ -29,14 +29,14 @@ def main():
 
     print("Model accuracy indicators: ")
     my_mse = mse(y, y_hat)
-    print("mse: " + Fore.MAGENTA + my_mse + Style.RESET_ALL)
+    print("mse: " + Fore.MAGENTA + str(my_mse) + Style.RESET_ALL)
     my_rmse = rmse(y, y_hat)
-    print("rmse: " + Fore.MAGENTA + my_rmse + Style.RESET_ALL)
+    print("rmse: " + Fore.MAGENTA + str(my_rmse) + Style.RESET_ALL)
     my_mae = mae(y, y_hat)
-    print("mae: " + Fore.MAGENTA + my_mae + Style.RESET_ALL)
+    print("mae: " + Fore.MAGENTA + str(my_mae) + Style.RESET_ALL)
     my_r2score = r2score(y, y_hat)
-    print("r2score: " + Fore.MAGENTA + my_r2score + Style.RESET_ALL)
-    # add interpretation
+    print("r2score: " + Fore.MAGENTA + str(my_r2score) + Style.RESET_ALL)
+    print(Fore.YELLOW + "ie " + str(round(my_r2score * 100)) + "% of variation in price is predictable from km with our model" + Style.RESET_ALL)
 
 if __name__ == "__main__":
     main()
