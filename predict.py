@@ -34,18 +34,20 @@ def main():
 
     # if before training, set thetas to 0
     file = 'thetas.csv'
-    if(os.path.exists(file) and os.path.isfile(file)): 
-        thetas = getLastThetas('thetas.csv')
-    else:
-        thetas = [0,0]
 
     mileage = getMileage()
 
-    estimation = predictPriceNorm(mileage, thetas, mileages, prices)
+    if(os.path.exists(file) and os.path.isfile(file)): 
+        thetas = getLastThetas('thetas.csv')
+        estimation = predictPriceNorm(mileage, thetas, mileages, prices)
+    else:
+        thetas = [0,0]
+        estimation = predictPrice(mileage, thetas)
+
     print('The estimated price of a car with ' + str(mileage) + ' km is ' + Fore.BLUE + str(round(estimation, 2)) + Style.RESET_ALL)
 
     if (mileage in mileages):
         print('The reported price in our database is ' + Fore.GREEN + str(prices[np.where(mileages == mileage)[0][0]]) + Style.RESET_ALL)
-        
+    
 if __name__ == "__main__":
     main()

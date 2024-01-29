@@ -1,4 +1,5 @@
 import math
+import sys
 import numpy as np
 from train import getData
 from predict import predictPriceNorm

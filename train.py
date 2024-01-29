@@ -24,17 +24,21 @@ iterations = 1000
 ### STEP 1: PROCESS FEATURE SCALING
 
 def	normalizeData(mileages, prices):
-    x = []
-    y = []
-    minM = min(mileages)
-    maxM = max(mileages)
-    for mileage in mileages:
-        x.append((mileage - minM) / (maxM - minM))
 
-    minP = min(prices)
-    maxP = max(prices)
-    for price in prices:
-        y.append((price - minP) / (maxP - minP))
+    try:
+        x = []
+        y = []
+        minM = min(mileages)
+        maxM = max(mileages)
+        for mileage in mileages:
+            x.append((mileage - minM) / (maxM - minM))
+
+        minP = min(prices)
+        maxP = max(prices)
+        for price in prices:
+            y.append((price - minP) / (maxP - minP))
+    except:
+        sys.exit('Csv value error')
 
     return (x, y)
 
@@ -83,7 +87,7 @@ def runGradientDescent(x, y, thetas, learningRate):
 ### STEP 3: PLOT RESULT
 
 def createFigure():
-    fig = plt.figure(1, figsize=(12.8, 9.6))
+    fig = plt.figure("FT_LINEAR_REGRESSION", figsize=(12.8, 9.6))
     ax = plt.subplot(2, 1, 1)
     ax2 = plt.subplot(2, 2, 3, projection="3d")
     ax3 = plt.subplot(2, 2, 4)
@@ -119,7 +123,9 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2, ax3):
     # cost
     ax2.plot(t0[frames], t1[frames], cost[frames], "k.")
 
-    # linear regression parameters
+    printParameters(frames, t0, t1, ax3)
+
+def printParameters(frames, t0, t1, ax3):
     ax3.clear()
     ax3.axis('off')
 
@@ -144,8 +150,8 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2, ax3):
 def plotLinearRegressionGrid(mileages, prices, ax):
 
     ax.set_title("Car price estimation depending on mileage", fontweight='bold')
-    ax.set_xlabel('km', fontweight='bold')
-    ax.set_ylabel('price', fontweight='bold')
+    ax.set_xlabel('mileage (km)', fontweight='bold')
+    ax.set_ylabel('price ($)', fontweight='bold')
     ax.set_xlim(min(mileages) - 10000, max(mileages) + 10000)
     ax.set_ylim(min(prices) - 1000, max(prices) + 1000)
     ax.grid(True)
@@ -210,10 +216,14 @@ def main():
     plotLinearRegressionGrid(mileages, prices, ax)
 
     # animation
-    ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2, ax3), frames= iterations, interval=1, blit = True, repeat=False)
-    plotCostFunction3d(x, y, cost, ax2)
 
-    plt.show()
+    try:
+        ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2, ax3), frames= iterations, interval=1, blit = True, repeat=False)
+        plotCostFunction3d(x, y, cost, ax2)
+
+        plt.show()
+    except:
+        sys.exit('Csv value error')
 
     print(Fore.MAGENTA + 'Good Bye!' + Style.RESET_ALL)
 

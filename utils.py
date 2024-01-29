@@ -16,14 +16,17 @@ def	denormalizeElem(list, elem):
 ## CSV MANAGEMENT
 
 def getLastThetas(file):
-    with open(file, 'r') as f:
-        thetas = [0.0, 0.0]
-        lines = f.readlines()
-        if lines:
-            lastLine = lines[-1].strip()
-            thetas[0] = float(lastLine.split(',')[0])
-            thetas[1] = float(lastLine.split(',')[1])
-        return thetas
+    try:
+        with open(file, 'r') as f:
+            thetas = [0.0, 0.0]
+            lines = f.readlines()
+            if lines:
+                lastLine = lines[-1].strip()
+                thetas[0] = float(lastLine.split(',')[0])
+                thetas[1] = float(lastLine.split(',')[1])
+    except:
+        sys.exit('Run training program first')
+    return thetas
 
 def getData():
     try:
@@ -34,6 +37,15 @@ def getData():
 
     except:
         sys.exit('Csv file not found')
+
+    if len(mileages) == 0:
+        sys.exit('Csv file error')
+
+    if len(prices) == 0:
+        sys.exit('Csv file error')
+
+    if (len(prices) <= 1 or len(mileages) <= 1):
+        sys.exit('Csv file error')
 
     return(mileages, prices)
 
