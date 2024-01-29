@@ -1,5 +1,9 @@
 import sys
 import os
+
+import numpy as np
+from colorama import Fore, Back, Style
+
 from utils import normalizeElem, denormalizeElem, getLastThetas, getData
 
 def predictPrice(mileage, thetas):
@@ -8,7 +12,6 @@ def predictPrice(mileage, thetas):
 def predictPriceNorm(mileage, thetas, mileages, prices):
     price = thetas[1] * normalizeElem(mileages, mileage) + thetas[0]
     return (denormalizeElem(prices, price))
-    # get last computed theta from thetas.csv
 
 def getMileage():
     while 1:
@@ -39,8 +42,10 @@ def main():
     mileage = getMileage()
 
     estimation = predictPriceNorm(mileage, thetas, mileages, prices)
-    print('The estimated price of a car with ' + str(mileage) + ' km is ' + str(estimation))
-    # if proposed mileage in set of data add comparison ?
+    print('The estimated price of a car with ' + str(mileage) + ' km is ' + Fore.BLUE + str(round(estimation, 2)) + Style.RESET_ALL)
 
+    if (mileage in mileages):
+        print('The reported price in our database is ' + Fore.GREEN + str(prices[np.where(mileages == mileage)[0][0]]) + Style.RESET_ALL)
+        
 if __name__ == "__main__":
     main()
