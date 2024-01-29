@@ -18,8 +18,8 @@ from predict import predictPrice, predictPriceNorm
 from utils import normalizeElem, denormalizeElem
 from utils import getData, getThetas, createCsv
 
-learningRate = 0.0001
-iterations = 500000
+learningRate = 0.1
+iterations = 1000
 
 ### STEP 1: PROCESS FEATURE SCALING
 
@@ -96,35 +96,35 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2, ax3):
     plotLinearRegressionGrid(mileages, prices, ax)
 
     # csv values
-    ax.plot(mileages, prices, "ks") 
+    ax.plot(mileages, prices, "gs") 
 
     # prediction line
     lineX = [float(min(mileages)), float(max(mileages))]
     lineY = []
     for elem in lineX:
-        result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
+        result = t1[frames] * normalizeElem(mileages, elem) + t0[frames]
         lineY.append(denormalizeElem(prices, result)) 
 
     ax.plot(lineX, lineY, 'b-')
     
-    # # gap between predicted value and actual value
-    # predicted_values = []
-    # for elem in mileages:
-    #     result = t1[frames * 1000] * normalizeElem(mileages, elem) + t0[frames * 1000]
-    #     predicted_values.append(result)
-    # for i in range(len(mileages)):
-    #     ax.plot(mileages, predicted_values, 'ks')
-    #     ax.plot([mileages[i], mileages[i]], [predicted_values[i], prices[i]], 'r--')
+    # gap between predicted value and actual value
+    predicted_values = []
+    for elem in mileages:
+        result = t1[frames] * normalizeElem(mileages, elem) + t0[frames]
+        predicted_values.append(denormalizeElem(prices,result))
+    for i in range(len(mileages)):
+        ax.plot(mileages[i], predicted_values[i], 'bx')
+        ax.plot([mileages[i], mileages[i]], [predicted_values[i], prices[i]], 'k--')
 
     # cost
-    ax2.plot(t0[frames * 1000], t1[frames * 1000], cost[frames * 1000], "k.")
+    ax2.plot(t0[frames], t1[frames], cost[frames], "k.")
 
     # linear regression parameters
     ax3.clear()
     ax3.axis('off')
 
     ax3.text(0, 0.4, 'epochs: ', fontsize = 12, fontweight='bold')
-    ax3.text(0.5, 0.4, str(frames * 1000), fontsize = 12)
+    ax3.text(0.5, 0.4, str(frames + 1), fontsize = 12)
 
     ax3.text(0, 0.3, 'learning rate: ', fontsize = 12, fontweight='bold')
     ax3.text(0.5, 0.3, str(learningRate), fontsize = 12)
@@ -133,10 +133,13 @@ def animatePlots(frames, mileages, prices, t0, t1, cost, ax, ax2, ax3):
     ax3.text(0.5, 0.2, 'yes', fontsize = 12)
 
     ax3.text(0, 0.1, 'theta0: ', fontsize = 12, fontweight='bold')
-    ax3.text(0.5, 0.1, str(t0[frames * 1000]), fontsize = 12)
+    ax3.text(0.5, 0.1, str(t0[frames]), fontsize = 12)
 
     ax3.text(0, 0, 'theta1: ' , fontsize = 12, fontweight='bold')
-    ax3.text(0.5, 0, str(t1[frames * 1000]), fontsize = 12)
+    ax3.text(0.5, 0, str(t1[frames]), fontsize = 12)
+
+    if (frames == iterations - 1):
+        print('Animation ' + Fore.GREEN + '[FINISHED]' + Style.RESET_ALL)
 
 def plotLinearRegressionGrid(mileages, prices, ax):
 
@@ -197,18 +200,22 @@ def main():
         if (key == ''):
             break
 
-    print('Animation ' + Fore.GREEN + '[PLAY]' + Style.RESET_ALL)
+    print('Animation ' + Fore.YELLOW + '[PLAYING]' + Style.RESET_ALL)
 
     # graphs
     fig, ax, ax2, ax3 = createFigure()
     fig.patch.set_facecolor('#FFFFF0')
+    ax.set_facecolor('#FFFFF0')
+    ax2.set_facecolor('#FFFFF0')
     plotLinearRegressionGrid(mileages, prices, ax)
 
     # animation
-    ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2, ax3), frames= int(iterations / 1000 + 1), interval=1, blit = True, repeat=False)
+    ani = animation.FuncAnimation(fig=fig, func=animatePlots, fargs=(mileages, prices, t0, t1, cost, ax, ax2, ax3), frames= iterations, interval=1, blit = True, repeat=False)
     plotCostFunction3d(x, y, cost, ax2)
 
     plt.show()
+
+    print(Fore.MAGENTA + 'Good Bye!' + Style.RESET_ALL)
 
 if	__name__ == '__main__':
     main()
